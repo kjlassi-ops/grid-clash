@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.gridclash.app.GridClashApplication
 import com.gridclash.app.core.model.Difficulty
 import com.gridclash.app.core.model.GameMode
+import com.gridclash.app.core.model.GridSize
 import com.gridclash.app.ui.game.GameScreen
 import com.gridclash.app.ui.home.HomeScreen
 import com.gridclash.app.ui.multiplayer.MultiplayerScreen
@@ -22,12 +23,19 @@ object Routes {
     const val HOME        = "home"
     const val SOLO_SETUP  = "solo_setup"
     const val MULTIPLAYER = "multiplayer"
-    const val GAME        = "game/{mode}/{difficulty}"
+    const val GAME        = "game/{mode}/{difficulty}/{gridSize}/{localName}/{opponentName}"
     const val RULES       = "rules"
     const val SETTINGS    = "settings"
 
-    fun game(mode: GameMode, difficulty: Difficulty = Difficulty.MEDIUM) =
-        "game/${mode.name}/${difficulty.name}"
+    fun game(
+        mode: GameMode,
+        difficulty: Difficulty = Difficulty.MEDIUM,
+        gridSize: GridSize = GridSize.SMALL,
+        localName: String = "Toi",
+        opponentName: String = "Bot"
+    ) = "game/${mode.name}/${difficulty.name}/${gridSize.name}/${localName.encode()}/${opponentName.encode()}"
+
+    private fun String.encode() = java.net.URLEncoder.encode(this, "UTF-8")
 }
 
 // ─── Graphe de navigation ────────────────────────────────────────────────────
@@ -50,26 +58,31 @@ fun AppNavGraph(
 
         composable(Routes.SOLO_SETUP) {
             SoloSetupScreen(
+                application = application,
                 onBack  = { navController.popBackStack() },
-                onStart = { difficulty ->
-                    navController.navigate(Routes.game(GameMode.SOLO, difficulty))
+                onStart = { difficulty, gridSize, playerName ->
+                    navController.navigate(
+                        Routes.game(GameMode.SOLO, difficulty, gridSize, playerName, "Bot")
+                    )
                 }
             )
         }
 
         composable(Routes.MULTIPLAYER) {
             MultiplayerScreen(
-                application     = application,
-                onBack          = { navController.popBackStack() },
-                onGameStartHost = {
-                    navController.navigate(Routes.game(GameMode.MULTI_HOST)) {
-                        popUpTo(Routes.MULTIPLAYER) { inclusive = true }
-                    }
+                application       = application,
+                onBack            = { navController.popBackStack() },
+                onGameStartHost   = { gridSize, localName, opponentName ->
+                    navController.navigate(
+                        Routes.game(GameMode.MULTI_HOST, gridSize = gridSize,
+                            localName = localName, opponentName = opponentName)
+                    ) { popUpTo(Routes.MULTIPLAYER) { inclusive = true } }
                 },
-                onGameStartClient = {
-                    navController.navigate(Routes.game(GameMode.MULTI_CLIENT)) {
-                        popUpTo(Routes.MULTIPLAYER) { inclusive = true }
-                    }
+                onGameStartClient = { gridSize, localName, opponentName ->
+                    navController.navigate(
+                        Routes.game(GameMode.MULTI_CLIENT, gridSize = gridSize,
+                            localName = localName, opponentName = opponentName)
+                    ) { popUpTo(Routes.MULTIPLAYER) { inclusive = true } }
                 }
             )
         }
@@ -77,18 +90,27 @@ fun AppNavGraph(
         composable(
             route     = Routes.GAME,
             arguments = listOf(
-                navArgument("mode")       { type = NavType.StringType },
-                navArgument("difficulty") { type = NavType.StringType }
+                navArgument("mode")         { type = NavType.StringType },
+                navArgument("difficulty")   { type = NavType.StringType },
+                navArgument("gridSize")     { type = NavType.StringType },
+                navArgument("localName")    { type = NavType.StringType },
+                navArgument("opponentName") { type = NavType.StringType }
             )
         ) { entry ->
-            val mode       = GameMode.valueOf(entry.arguments?.getString("mode") ?: "SOLO")
-            val difficulty = Difficulty.valueOf(entry.arguments?.getString("difficulty") ?: "MEDIUM")
+            val mode         = GameMode.valueOf(entry.arguments?.getString("mode") ?: "SOLO")
+            val difficulty   = Difficulty.valueOf(entry.arguments?.getString("difficulty") ?: "MEDIUM")
+            val gridSize     = GridSize.valueOf(entry.arguments?.getString("gridSize") ?: "SMALL")
+            val localName    = java.net.URLDecoder.decode(entry.arguments?.getString("localName") ?: "Toi", "UTF-8")
+            val opponentName = java.net.URLDecoder.decode(entry.arguments?.getString("opponentName") ?: "Bot", "UTF-8")
 
             GameScreen(
-                mode            = mode,
-                difficulty      = difficulty,
-                application     = application,
-                onBackToMenu    = {
+                mode         = mode,
+                difficulty   = difficulty,
+                gridSize     = gridSize,
+                localName    = localName,
+                opponentName = opponentName,
+                application  = application,
+                onBackToMenu = {
                     application.container.networkRepository.clear()
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.HOME) { inclusive = true }
@@ -102,7 +124,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.SETTINGS) {
-            SettingsScreen(onBack = { navController.popBackStack() })
+            SettingsScreen(application = application, onBack = { navController.popBackStack() })
         }
     }
 }

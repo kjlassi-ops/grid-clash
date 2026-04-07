@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 // ─── Types de messages ────────────────────────────────────────────────────────
 
 enum class MessageType {
-    PLAYER_JOIN,    // client → host : annonce sa présence
-    GAME_START,     // host → client : démarre la partie avec les symboles
+    PLAYER_JOIN,    // client → host : annonce sa présence + pseudo
+    GAME_START,     // host → client : démarre la partie avec les symboles + taille de grille
     PLAY_MOVE,      // bidirectionnel : indique un coup joué
     GAME_OVER,      // bidirectionnel : fin de partie
     REMATCH,        // bidirectionnel : demande / accepte une revanche
@@ -24,8 +24,10 @@ data class NetworkMessage(
     val playerName: String? = null,
 
     // GAME_START
-    val hostSymbol: String? = null,     // "X" ou "O"
+    val hostSymbol: String?   = null,   // "X" ou "O"
     val clientSymbol: String? = null,
+    val gridSize: String?     = null,   // "SMALL", "MEDIUM", "LARGE"
+    val hostName: String?     = null,
 
     // PLAY_MOVE
     val cellIndex: Int? = null,

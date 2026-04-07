@@ -12,13 +12,14 @@ class GameEngine {
      */
     fun applyMove(state: GameUiState, cellIndex: Int): GameUiState? {
         if (state.isGameOver) return null
-        if (cellIndex !in 0..8) return null
+        val totalCells = state.gridSize.size * state.gridSize.size
+        if (cellIndex !in 0 until totalCells) return null
         if (state.board[cellIndex] != CellState.EMPTY) return null
 
         val newBoard = state.board.toMutableList()
         newBoard[cellIndex] = CellState.from(state.currentTurn)
 
-        val result = WinChecker.check(newBoard)
+        val result = WinChecker.check(newBoard, state.gridSize)
         val nextTurn = if (result is GameResult.Ongoing) state.currentTurn.opponent()
                        else state.currentTurn
 
@@ -26,7 +27,7 @@ class GameEngine {
             is GameResult.Winner -> if (result.symbol == PlayerSymbol.X)
                 Triple(state.scoreX + 1, state.scoreO, state.scoreDraw)
             else Triple(state.scoreX, state.scoreO + 1, state.scoreDraw)
-            GameResult.Draw   -> Triple(state.scoreX, state.scoreO, state.scoreDraw + 1)
+            GameResult.Draw    -> Triple(state.scoreX, state.scoreO, state.scoreDraw + 1)
             GameResult.Ongoing -> Triple(state.scoreX, state.scoreO, state.scoreDraw)
         }
 
@@ -41,9 +42,9 @@ class GameEngine {
         )
     }
 
-    /** Remet le plateau à zéro sans toucher aux scores. */
+    /** Remet le plateau à zéro sans toucher aux scores ni aux noms. */
     fun resetBoard(state: GameUiState): GameUiState = state.copy(
-        board       = List(9) { CellState.EMPTY },
+        board       = List(state.gridSize.size * state.gridSize.size) { CellState.EMPTY },
         currentTurn = PlayerSymbol.X,
         result      = GameResult.Ongoing,
         moveCount   = 0,

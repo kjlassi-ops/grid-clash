@@ -39,23 +39,33 @@ enum class Difficulty { EASY, MEDIUM, HARD;
 
 enum class GameMode { SOLO, MULTI_HOST, MULTI_CLIENT }
 
+// ─── Taille de grille ─────────────────────────────────────────────────────────
+
+enum class GridSize(val size: Int, val winLength: Int, val label: String) {
+    SMALL(3, 3, "3×3"),
+    MEDIUM(4, 4, "4×4"),
+    LARGE(5, 4, "5×5")
+}
+
 // ─── État UI de la partie ─────────────────────────────────────────────────────
 
 data class GameUiState(
-    val board: List<CellState>      = List(9) { CellState.EMPTY },
-    val currentTurn: PlayerSymbol   = PlayerSymbol.X,
-    val localSymbol: PlayerSymbol   = PlayerSymbol.X,
-    val result: GameResult          = GameResult.Ongoing,
-    val scoreX: Int                 = 0,
-    val scoreO: Int                 = 0,
-    val scoreDraw: Int              = 0,
-    val isThinking: Boolean         = false,   // bot en cours de réflexion
-    val opponentName: String        = "Bot",
-    val moveCount: Int              = 0,
-    val mode: GameMode              = GameMode.SOLO,
-    val hostIp: String              = "",       // pour l'écran CreateGame
-    val isWaitingForOpponent: Boolean = false,
-    val connectionError: String?    = null
+    val gridSize: GridSize               = GridSize.SMALL,
+    val board: List<CellState>           = List(GridSize.SMALL.size * GridSize.SMALL.size) { CellState.EMPTY },
+    val currentTurn: PlayerSymbol        = PlayerSymbol.X,
+    val localSymbol: PlayerSymbol        = PlayerSymbol.X,
+    val result: GameResult               = GameResult.Ongoing,
+    val scoreX: Int                      = 0,
+    val scoreO: Int                      = 0,
+    val scoreDraw: Int                   = 0,
+    val isThinking: Boolean              = false,
+    val localPlayerName: String          = "Toi",
+    val opponentName: String             = "Bot",
+    val moveCount: Int                   = 0,
+    val mode: GameMode                   = GameMode.SOLO,
+    val hostIp: String                   = "",
+    val isWaitingForOpponent: Boolean    = false,
+    val connectionError: String?         = null
 ) {
     val isMyTurn: Boolean get() = currentTurn == localSymbol
     val isGameOver: Boolean get() = result !is GameResult.Ongoing

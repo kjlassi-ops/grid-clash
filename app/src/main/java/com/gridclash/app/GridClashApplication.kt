@@ -1,11 +1,12 @@
 package com.gridclash.app
 
 import android.app.Application
+import com.gridclash.app.audio.AudioManager
+import com.gridclash.app.data.PreferencesRepository
 import com.gridclash.app.network.NetworkRepository
 
 /**
  * Application class — point d'entrée du graphe de dépendances.
- * Injection manuelle simple : pas de Hilt pour garder le MVP minimal.
  */
 class GridClashApplication : Application() {
 
@@ -16,11 +17,18 @@ class GridClashApplication : Application() {
         super.onCreate()
         container = AppContainer(this)
     }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        container.audioManager.release()
+    }
 }
 
 /**
  * Conteneur de dépendances partagées entre tous les écrans.
  */
 class AppContainer(val application: Application) {
-    val networkRepository: NetworkRepository = NetworkRepository()
+    val networkRepository: NetworkRepository    = NetworkRepository()
+    val preferencesRepository: PreferencesRepository = PreferencesRepository(application)
+    val audioManager: AudioManager              = AudioManager(application)
 }

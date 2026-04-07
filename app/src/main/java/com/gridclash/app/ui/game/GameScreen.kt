@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,6 +35,9 @@ import com.gridclash.app.ui.theme.*
 fun GameScreen(
     mode: GameMode,
     difficulty: Difficulty,
+    gridSize: GridSize,
+    localName: String,
+    opponentName: String,
     application: GridClashApplication,
     onBackToMenu: () -> Unit
 ) {
@@ -41,7 +45,11 @@ fun GameScreen(
         factory = object : androidx.lifecycle.ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return GameViewModel(mode, difficulty, application.container.networkRepository) as T
+                return GameViewModel(
+                    mode, difficulty, gridSize, localName, opponentName,
+                    application.container.networkRepository,
+                    application.container.audioManager
+                ) as T
             }
         }
     )
@@ -52,21 +60,15 @@ fun GameScreen(
 
             // ── TopBar ────────────────────────────────────────────────────────
             TopAppBar(
-                title = {
-                    Text("GRID CLASH", color = Primary, fontWeight = FontWeight.Black)
-                },
+                title = { Text("GRID CLASH", color = Primary, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onBackToMenu) {
                         Icon(Icons.Default.ArrowBack, null, tint = Primary)
                     }
                 },
                 actions = {
-                    // Badge tour actuel
                     val isMyTurn = state.isMyTurn && !state.isGameOver
-                    Surface(
-                        shape = CircleShape,
-                        color = if (isMyTurn) Primary.copy(alpha = 0.15f) else SurfaceContainer
-                    ) {
+                    Surface(shape = CircleShape, color = if (isMyTurn) Primary.copy(alpha = 0.15f) else SurfaceContainer) {
                         Row(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -77,7 +79,11 @@ fun GameScreen(
                                     if (isMyTurn) Primary else OnSurfaceVariant, CircleShape
                                 ))
                                 Text(
-                                    if (state.isThinking) "Bot réfléchit..." else if (isMyTurn) "Ton tour" else "Tour adverse",
+                                    when {
+                                        state.isThinking -> "Bot réfléchit..."
+                                        isMyTurn         -> "Ton tour"
+                                        else             -> "Tour adverse"
+                                    },
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (isMyTurn) Primary else OnSurfaceVariant
                                 )
@@ -90,17 +96,14 @@ fun GameScreen(
             )
 
             // ── Scoreboard ────────────────────────────────────────────────────
-            Scoreboard(
-                state = state,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-            )
+            Scoreboard(state = state, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
 
             Spacer(Modifier.weight(1f))
 
-            // ── Plateau de jeu ────────────────────────────────────────────────
+            // ── Plateau ───────────────────────────────────────────────────────
             GameBoard(
-                state   = state,
-                onClick = vm::onCellClick,
+                state    = state,
+                onClick  = vm::onCellClick,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .align(Alignment.CenterHorizontally)
@@ -108,9 +111,9 @@ fun GameScreen(
 
             Spacer(Modifier.weight(1f))
 
-            // ── Indicateur de pensée ──────────────────────────────────────────
+            // ── Bot thinking ──────────────────────────────────────────────────
             AnimatedVisibility(
-                visible = state.isThinking,
+                visible  = state.isThinking,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Row(
@@ -118,11 +121,7 @@ fun GameScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(bottom = 12.dp)
                 ) {
-                    CircularProgressIndicator(
-                        color = Primary,
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
-                    )
+                    CircularProgressIndicator(color = Primary, modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                     Text("IA en réflexion...", color = OnSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -132,16 +131,12 @@ fun GameScreen(
 
         // ── Game Over overlay ─────────────────────────────────────────────────
         AnimatedVisibility(
-            visible = state.isGameOver,
-            enter   = slideInVertically { it } + fadeIn(),
-            exit    = slideOutVertically { it } + fadeOut(),
+            visible  = state.isGameOver,
+            enter    = slideInVertically { it } + fadeIn(),
+            exit     = slideOutVertically { it } + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-            GameOverPanel(
-                state       = state,
-                onRematch   = vm::rematch,
-                onBackToMenu = onBackToMenu
-            )
+            GameOverPanel(state = state, onRematch = vm::rematch, onBackToMenu = onBackToMenu)
         }
     }
 }
@@ -152,24 +147,24 @@ fun GameScreen(
 private fun Scoreboard(state: GameUiState, modifier: Modifier = Modifier) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         ScoreCell(
-            label   = "Tu (${state.localSymbol.name})",
-            score   = if (state.localSymbol == PlayerSymbol.X) state.scoreX else state.scoreO,
+            label    = state.localPlayerName,
+            score    = if (state.localSymbol == PlayerSymbol.X) state.scoreX else state.scoreO,
             isActive = state.currentTurn == state.localSymbol,
-            color   = if (state.localSymbol == PlayerSymbol.X) SymbolX else SymbolO,
+            color    = if (state.localSymbol == PlayerSymbol.X) SymbolX else SymbolO,
             modifier = Modifier.weight(1f)
         )
         ScoreCell(
-            label   = "=",
-            score   = state.scoreDraw,
+            label    = "=",
+            score    = state.scoreDraw,
             isActive = false,
-            color   = OnSurfaceVariant,
+            color    = OnSurfaceVariant,
             modifier = Modifier.weight(0.6f)
         )
         ScoreCell(
-            label   = state.opponentName,
-            score   = if (state.localSymbol == PlayerSymbol.X) state.scoreO else state.scoreX,
+            label    = state.opponentName,
+            score    = if (state.localSymbol == PlayerSymbol.X) state.scoreO else state.scoreX,
             isActive = state.currentTurn != state.localSymbol,
-            color   = if (state.localSymbol == PlayerSymbol.X) SymbolO else SymbolX,
+            color    = if (state.localSymbol == PlayerSymbol.X) SymbolO else SymbolX,
             modifier = Modifier.weight(1f)
         )
     }
@@ -177,44 +172,44 @@ private fun Scoreboard(state: GameUiState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ScoreCell(label: String, score: Int, isActive: Boolean, color: Color, modifier: Modifier) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = SurfaceContainerHigh,
-        modifier = modifier
-    ) {
+    Surface(shape = RoundedCornerShape(12.dp), color = SurfaceContainerHigh, modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(vertical = 10.dp)
                 .then(
-                    if (isActive) Modifier.border(
-                        2.dp, color.copy(alpha = 0.5f), RoundedCornerShape(12.dp)
-                    ) else Modifier
+                    if (isActive) Modifier.border(2.dp, color.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                    else Modifier
                 )
         ) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, maxLines = 1)
-            Text(
-                score.toString(),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Black,
-                color = if (isActive) color else OnSurface
-            )
+            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant,
+                maxLines = 1)
+            Text(score.toString(), style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Black, color = if (isActive) color else OnSurface)
         }
     }
 }
 
-// ─── Plateau ──────────────────────────────────────────────────────────────────
+// ─── Plateau dynamique ────────────────────────────────────────────────────────
 
 @Composable
-private fun GameBoard(
-    state: GameUiState,
-    onClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun GameBoard(state: GameUiState, onClick: (Int) -> Unit, modifier: Modifier = Modifier) {
     val winningCells = (state.result as? GameResult.Winner)?.cells ?: emptyList()
+    val n = state.gridSize.size
+
+    // Taille des cellules selon la grille
+    val cellSize: Dp = when (state.gridSize) {
+        GridSize.SMALL  -> 88.dp
+        GridSize.MEDIUM -> 72.dp
+        GridSize.LARGE  -> 58.dp
+    }
+    val iconSize: Dp = when (state.gridSize) {
+        GridSize.SMALL  -> 44.dp
+        GridSize.MEDIUM -> 36.dp
+        GridSize.LARGE  -> 28.dp
+    }
 
     Box(modifier = modifier) {
-        // Lueur ambiante
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -229,17 +224,19 @@ private fun GameBoard(
             color = SurfaceContainerLow.copy(alpha = 0.7f),
             modifier = Modifier.padding(4.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (row in 0..2) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for (col in 0..2) {
-                            val index = row * 3 + col
+            Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                for (row in 0 until n) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        for (col in 0 until n) {
+                            val index = row * n + col
                             GameCell(
-                                cell       = state.board[index],
-                                isWinning  = index in winningCells,
+                                cell        = state.board[index],
+                                isWinning   = index in winningCells,
                                 isClickable = state.board[index] == CellState.EMPTY
                                               && state.isMyTurn && !state.isGameOver && !state.isThinking,
-                                onClick    = { onClick(index) }
+                                cellSize    = cellSize,
+                                iconSize    = iconSize,
+                                onClick     = { onClick(index) }
                             )
                         }
                     }
@@ -254,6 +251,8 @@ private fun GameCell(
     cell: CellState,
     isWinning: Boolean,
     isClickable: Boolean,
+    cellSize: Dp,
+    iconSize: Dp,
     onClick: () -> Unit
 ) {
     val scale by animateFloatAsState(
@@ -264,41 +263,22 @@ private fun GameCell(
 
     Box(
         modifier = Modifier
-            .size(88.dp)
+            .size(cellSize)
             .scale(scale)
-            .clip(RoundedCornerShape(16.dp))
-            .background(
-                when {
-                    isWinning -> WinningCellBg
-                    else      -> SurfaceContainerHighest
-                }
-            )
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (isWinning) WinningCellBg else SurfaceContainerHighest)
             .then(
-                if (isWinning) Modifier.border(1.5.dp, WinningCellBorder, RoundedCornerShape(16.dp))
+                if (isWinning) Modifier.border(1.5.dp, WinningCellBorder, RoundedCornerShape(14.dp))
                 else Modifier
             )
             .clickable(enabled = isClickable, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         when (cell) {
-            CellState.X -> Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "X",
-                tint = SymbolX,
-                modifier = Modifier.size(44.dp)
-            )
-            CellState.O -> Icon(
-                imageVector = Icons.Outlined.Circle,
-                contentDescription = "O",
-                tint = SymbolO,
-                modifier = Modifier.size(44.dp)
-            )
+            CellState.X -> Icon(Icons.Default.Close, "X", tint = SymbolX, modifier = Modifier.size(iconSize))
+            CellState.O -> Icon(Icons.Outlined.Circle, "O", tint = SymbolO, modifier = Modifier.size(iconSize))
             CellState.EMPTY -> if (isClickable) {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .background(Primary.copy(alpha = 0.08f), CircleShape)
-                )
+                Box(Modifier.size(16.dp).background(Primary.copy(alpha = 0.08f), CircleShape))
             }
         }
     }
@@ -307,11 +287,7 @@ private fun GameCell(
 // ─── Game Over Panel ──────────────────────────────────────────────────────────
 
 @Composable
-private fun GameOverPanel(
-    state: GameUiState,
-    onRematch: () -> Unit,
-    onBackToMenu: () -> Unit
-) {
+private fun GameOverPanel(state: GameUiState, onRematch: () -> Unit, onBackToMenu: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         color = SurfaceContainerHigh,
@@ -322,12 +298,12 @@ private fun GameOverPanel(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Résultat
             val (title, subtitle) = when (val r = state.result) {
                 is GameResult.Winner -> {
                     val isLocalWinner = r.symbol == state.localSymbol
-                    if (isLocalWinner) Pair("VICTOIRE", "Tu as dominé la grille !")
-                    else Pair("DÉFAITE", "L'adversaire a gagné cette fois.")
+                    val winnerName    = if (isLocalWinner) state.localPlayerName else state.opponentName
+                    if (isLocalWinner) Pair("VICTOIRE", "$winnerName a dominé la grille !")
+                    else Pair("DÉFAITE", "$winnerName a gagné cette fois.")
                 }
                 GameResult.Draw -> Pair("ÉGALITÉ", "Match nul — revanche ?")
                 else -> Pair("", "")
@@ -338,10 +314,8 @@ private fun GameOverPanel(
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Black,
                 color = when (state.result) {
-                    is GameResult.Winner -> {
-                        if ((state.result as GameResult.Winner).symbol == state.localSymbol) Primary
-                        else Error
-                    }
+                    is GameResult.Winner ->
+                        if ((state.result as GameResult.Winner).symbol == state.localSymbol) Primary else Error
                     else -> OnSurface
                 },
                 textAlign = TextAlign.Center
@@ -349,17 +323,15 @@ private fun GameOverPanel(
 
             Text(subtitle, style = MaterialTheme.typography.bodyLarge, color = OnSurfaceVariant)
 
-            // Stats rapides
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 StatChip("Coups", "${state.moveCount}")
-                StatChip("X", "${state.scoreX}")
-                StatChip("O", "${state.scoreO}")
+                StatChip(state.localPlayerName.take(6), "${if (state.localSymbol == PlayerSymbol.X) state.scoreX else state.scoreO}")
+                StatChip(state.opponentName.take(6),    "${if (state.localSymbol == PlayerSymbol.X) state.scoreO else state.scoreX}")
                 StatChip("=", "${state.scoreDraw}")
             }
 
             Spacer(Modifier.height(8.dp))
 
-            // Boutons
             Button(
                 onClick = onRematch,
                 modifier = Modifier.fillMaxWidth().height(52.dp),

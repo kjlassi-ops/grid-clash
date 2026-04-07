@@ -2,23 +2,25 @@ package com.gridclash.app.game.ai
 
 import com.gridclash.app.core.model.CellState
 import com.gridclash.app.core.model.Difficulty
+import com.gridclash.app.core.model.GameResult
+import com.gridclash.app.core.model.GridSize
 import com.gridclash.app.core.model.PlayerSymbol
 import com.gridclash.app.game.engine.WinChecker
 
 // ─── Interface ────────────────────────────────────────────────────────────────
 
 interface BotAI {
-    /** Retourne l'index de la case à jouer (0-8). */
+    /** Retourne l'index de la case à jouer. */
     fun getMove(board: List<CellState>, botSymbol: PlayerSymbol): Int
 }
 
 // ─── Factory ──────────────────────────────────────────────────────────────────
 
 object BotFactory {
-    fun create(difficulty: Difficulty): BotAI = when (difficulty) {
+    fun create(difficulty: Difficulty, gridSize: GridSize = GridSize.SMALL): BotAI = when (difficulty) {
         Difficulty.EASY   -> EasyBot()
-        Difficulty.MEDIUM -> MediumBot()
-        Difficulty.HARD   -> HardBot()
+        Difficulty.MEDIUM -> MediumBot(gridSize)
+        Difficulty.HARD   -> HardBot(gridSize)
     }
 }
 
@@ -29,9 +31,9 @@ class EasyBot : BotAI {
         WinChecker.emptyCells(board).random()
 }
 
-// ─── Moyen : bloque / gagne, sinon aléatoire ─────────────────────────────────
+// ─── Moyen : bloque / gagne, sinon stratégique ───────────────────────────────
 
-class MediumBot : BotAI {
+class MediumBot(private val gridSize: GridSize) : BotAI {
     override fun getMove(board: List<CellState>, botSymbol: PlayerSymbol): Int {
         val opponent = botSymbol.opponent()
 
@@ -42,10 +44,12 @@ class MediumBot : BotAI {
         findWinningMove(board, opponent)?.let { return it }
 
         // 3. Prendre le centre si libre
-        if (board[4] == CellState.EMPTY) return 4
+        val center = (gridSize.size * gridSize.size) / 2
+        if (board[center] == CellState.EMPTY) return center
 
         // 4. Coin libre aléatoire
-        val corners = listOf(0, 2, 6, 8).filter { board[it] == CellState.EMPTY }
+        val n = gridSize.size
+        val corners = listOf(0, n - 1, n * (n - 1), n * n - 1).filter { board[it] == CellState.EMPTY }
         if (corners.isNotEmpty()) return corners.random()
 
         // 5. N'importe quelle case libre
@@ -56,15 +60,23 @@ class MediumBot : BotAI {
         val cell = CellState.from(symbol)
         for (i in WinChecker.emptyCells(board)) {
             val test = board.toMutableList().also { it[i] = cell }
-            if (WinChecker.check(test) is com.gridclash.app.core.model.GameResult.Winner) return i
+            if (WinChecker.check(test, gridSize) is GameResult.Winner) return i
         }
         return null
     }
 }
 
-// ─── Difficile : Minimax avec élagage alpha-bêta ─────────────────────────────
+// ─── Difficile : Minimax avec élagage alpha-bêta + profondeur limitée ────────
 
-class HardBot : BotAI {
+class HardBot(private val gridSize: GridSize) : BotAI {
+
+    // Profondeur max : illimitée pour 3×3, limitée pour 4×4 et 5×5
+    private val maxDepth: Int = when (gridSize) {
+        GridSize.SMALL  -> Int.MAX_VALUE / 2
+        GridSize.MEDIUM -> 6
+        GridSize.LARGE  -> 4
+    }
+
     override fun getMove(board: List<CellState>, botSymbol: PlayerSymbol): Int {
         var bestScore = Int.MIN_VALUE
         var bestMove  = WinChecker.emptyCells(board).firstOrNull() ?: 0
@@ -86,12 +98,15 @@ class HardBot : BotAI {
         alpha: Int,
         beta: Int
     ): Int {
-        when (val result = WinChecker.check(board)) {
-            is com.gridclash.app.core.model.GameResult.Winner ->
-                return if (result.symbol == botSymbol) 10 - depth else depth - 10
-            com.gridclash.app.core.model.GameResult.Draw -> return 0
+        when (val result = WinChecker.check(board, gridSize)) {
+            is GameResult.Winner ->
+                return if (result.symbol == botSymbol) 100 - depth else depth - 100
+            GameResult.Draw -> return 0
             else -> Unit
         }
+
+        // Profondeur atteinte : évaluation heuristique
+        if (depth >= maxDepth) return evaluate(board, botSymbol)
 
         var a = alpha
         var b = beta
@@ -103,7 +118,7 @@ class HardBot : BotAI {
                 best = maxOf(best, minimax(board, depth + 1, false, botSymbol, a, b))
                 board[i] = CellState.EMPTY
                 a = maxOf(a, best)
-                if (b <= a) break // élagage beta
+                if (b <= a) break
             }
             best
         } else {
@@ -114,9 +129,29 @@ class HardBot : BotAI {
                 best = minOf(best, minimax(board, depth + 1, true, botSymbol, a, b))
                 board[i] = CellState.EMPTY
                 b = minOf(b, best)
-                if (b <= a) break // élagage alpha
+                if (b <= a) break
             }
             best
         }
+    }
+
+    /**
+     * Évaluation heuristique du plateau quand la profondeur max est atteinte.
+     * Compte les lignes partiellement remplies : positif pour le bot, négatif pour l'humain.
+     */
+    private fun evaluate(board: List<CellState>, botSymbol: PlayerSymbol): Int {
+        val botCell   = CellState.from(botSymbol)
+        val humanCell = CellState.from(botSymbol.opponent())
+        val lines     = WinChecker.generateWinLines(gridSize.size, gridSize.winLength)
+        var score     = 0
+
+        for (line in lines) {
+            val botCount   = line.count { board[it] == botCell }
+            val humanCount = line.count { board[it] == humanCell }
+            // Ligne non mixte : peut encore être gagnée
+            if (humanCount == 0 && botCount > 0) score += botCount * botCount
+            if (botCount   == 0 && humanCount > 0) score -= humanCount * humanCount
+        }
+        return score
     }
 }

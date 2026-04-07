@@ -14,11 +14,13 @@ import com.gridclash.app.ui.theme.GridClashTheme
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var app: GridClashApplication
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val app = application as GridClashApplication
+        app = application as GridClashApplication
 
         setContent {
             GridClashTheme {
@@ -34,5 +36,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        app.container.audioManager.resumeMusic()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        app.container.audioManager.pauseMusic()
     }
 }
