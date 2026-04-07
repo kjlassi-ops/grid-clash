@@ -14,12 +14,12 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class PreferencesRepository(private val context: Context) {
 
     private object Keys {
-        val PLAYER_NAME       = stringKey("player_name")
-        val GRID_SIZE         = stringKey("grid_size")
-        val DIFFICULTY        = stringKey("difficulty")
-        val SOUND_ENABLED     = booleanKey("sound_enabled")
-        val MUSIC_ENABLED     = booleanKey("music_enabled")
-        val VIBRATION_ENABLED = booleanKey("vibration_enabled")
+        val PLAYER_NAME       = stringPreferencesKey("player_name")
+        val GRID_SIZE         = stringPreferencesKey("grid_size")
+        val DIFFICULTY        = stringPreferencesKey("difficulty")
+        val SOUND_ENABLED     = booleanPreferencesKey("sound_enabled")
+        val MUSIC_ENABLED     = booleanPreferencesKey("music_enabled")
+        val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
     }
 
     val preferences: Flow<UserPreferences> = context.dataStore.data.map { prefs ->
