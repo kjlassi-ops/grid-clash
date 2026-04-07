@@ -2,6 +2,7 @@ package com.gridclash.app.ui.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gridclash.app.audio.GameAudioManager
 import com.gridclash.app.core.model.*
 import com.gridclash.app.game.ai.BotFactory
 import com.gridclash.app.game.engine.GameEngine
@@ -15,38 +16,35 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    private val mode: GameMode,
-    private val difficulty: Difficulty,
-    private val networkRepository: NetworkRepository
+    private val config: GameConfig,
+    private val networkRepository: NetworkRepository,
+    private val audioManager: GameAudioManager
 ) : ViewModel() {
 
     private val engine = GameEngine()
-    private val bot    = BotFactory.create(difficulty)
+    private val bot = BotFactory.create(config.difficulty)
 
-    // Le symbole du joueur local (X pour solo et host, O pour client)
-    private val localSymbol: PlayerSymbol = when (mode) {
+    private val localSymbol: PlayerSymbol = when (config.mode) {
         GameMode.SOLO, GameMode.MULTI_HOST -> PlayerSymbol.X
-        GameMode.MULTI_CLIENT              -> PlayerSymbol.O
+        GameMode.MULTI_CLIENT -> PlayerSymbol.O
     }
 
     private val _uiState = MutableStateFlow(
         GameUiState(
-            mode        = mode,
+            mode = config.mode,
             localSymbol = localSymbol,
-            opponentName = when (mode) {
-                GameMode.SOLO         -> "Bot (${difficulty.label()})"
-                GameMode.MULTI_HOST   -> "Adversaire"
-                GameMode.MULTI_CLIENT -> "Hôte"
-            }
+            localPlayerName = config.localPlayerName,
+            opponentName = config.remotePlayerName,
+            gridSize = config.gridSize,
+            winLength = config.winLength,
+            board = List(config.gridSize.size * config.gridSize.size) { CellState.EMPTY },
+            isWaitingForOpponent = config.mode != GameMode.SOLO,
+            networkStatus = if (config.mode == GameMode.SOLO) NetworkStatus.IDLE else NetworkStatus.CONNECTED
         )
     )
     val uiState: StateFlow<GameUiState> = _uiState
 
-    init {
-        if (mode != GameMode.SOLO) observeNetwork()
-    }
-
-    // ─── Coup local ───────────────────────────────────────────────────────────
+    init { if (config.mode != GameMode.SOLO) observeNetwork() }
 
     fun onCellClick(index: Int) {
         val state = _uiState.value
@@ -54,54 +52,41 @@ class GameViewModel(
         if (state.board[index] != CellState.EMPTY) return
 
         playMove(index)
-
-        // En solo, déclencher le bot
-        if (mode == GameMode.SOLO && !_uiState.value.isGameOver) {
-            scheduleBotMove()
-        }
+        audioManager.onCellPlayed()
+        if (config.mode == GameMode.SOLO && !_uiState.value.isGameOver) scheduleBotMove()
     }
 
     private fun playMove(index: Int) {
         val newState = engine.applyMove(_uiState.value, index) ?: return
         _uiState.value = newState
+        handleGameEndAudio(newState)
 
-        // En multijoueur : envoyer le coup à l'adversaire
-        if (mode != GameMode.SOLO) {
+        if (config.mode != GameMode.SOLO) {
             viewModelScope.launch {
                 networkRepository.send(NetworkMessage(type = MessageType.PLAY_MOVE, cellIndex = index))
-
-                // Notifier fin de partie si besoin
-                val result = newState.result
-                if (result is GameResult.Winner || result == GameResult.Draw) {
-                    val resultStr = when (result) {
-                        is GameResult.Winner -> if (result.symbol == PlayerSymbol.X) "X_WINS" else "O_WINS"
-                        GameResult.Draw      -> "DRAW"
-                        else -> ""
-                    }
-                    networkRepository.send(
-                        NetworkMessage(
-                            type   = MessageType.GAME_OVER,
-                            result = resultStr,
-                            winner = if (result is GameResult.Winner) result.symbol.name else null
-                        )
-                    )
-                }
             }
         }
     }
 
-    // ─── Bot ─────────────────────────────────────────────────────────────────
+    private fun handleGameEndAudio(state: GameUiState) {
+        when (val result = state.result) {
+            is GameResult.Winner -> if (result.symbol == state.localSymbol) audioManager.onWin() else audioManager.onLose()
+            GameResult.Draw -> audioManager.onDraw()
+            else -> Unit
+        }
+    }
 
     private fun scheduleBotMove() {
         viewModelScope.launch {
             _uiState.update { it.copy(isThinking = true) }
-            delay(550L) // délai UX
+            delay(450L)
             val state = _uiState.value
             if (!state.isGameOver) {
                 val botSymbol = localSymbol.opponent()
-                val move = bot.getMove(state.board, botSymbol)
+                val move = bot.getMove(state.board, botSymbol, state.gridSize.size, state.winLength)
                 engine.applyMove(state, move)?.let { newState ->
                     _uiState.value = newState.copy(isThinking = false)
+                    handleGameEndAudio(_uiState.value)
                 }
             } else {
                 _uiState.update { it.copy(isThinking = false) }
@@ -109,29 +94,27 @@ class GameViewModel(
         }
     }
 
-    // ─── Réseau : écoute des messages adversaire ─────────────────────────────
-
     private fun observeNetwork() {
         viewModelScope.launch {
-            val incoming = when (mode) {
-                GameMode.MULTI_HOST   -> networkRepository.serverIncoming
+            val incoming = when (config.mode) {
+                GameMode.MULTI_HOST -> networkRepository.serverIncoming
                 GameMode.MULTI_CLIENT -> networkRepository.clientIncoming
                 else -> null
             } ?: return@launch
 
             incoming.collect { msg ->
                 when (msg.type) {
-                    MessageType.PLAY_MOVE -> {
-                        msg.cellIndex?.let { idx ->
-                            val newState = engine.applyMove(_uiState.value, idx)
-                            if (newState != null) _uiState.value = newState
+                    MessageType.PLAY_MOVE -> msg.cellIndex?.let { idx ->
+                        val newState = engine.applyMove(_uiState.value, idx)
+                        if (newState != null) {
+                            _uiState.value = newState
+                            audioManager.onCellPlayed()
+                            handleGameEndAudio(newState)
                         }
                     }
-                    MessageType.REMATCH -> {
-                        resetBoard()
-                    }
-                    MessageType.DISCONNECT -> {
-                        _uiState.update { it.copy(connectionError = "Adversaire déconnecté") }
+                    MessageType.REMATCH -> resetBoard()
+                    MessageType.DISCONNECT -> _uiState.update {
+                        it.copy(connectionError = "Adversaire déconnecté", networkStatus = NetworkStatus.DISCONNECTED)
                     }
                     else -> Unit
                 }
@@ -139,13 +122,9 @@ class GameViewModel(
         }
     }
 
-    // ─── Rejouer ─────────────────────────────────────────────────────────────
-
     fun rematch() {
-        if (mode != GameMode.SOLO) {
-            viewModelScope.launch {
-                networkRepository.send(NetworkMessage(type = MessageType.REMATCH))
-            }
+        if (config.mode != GameMode.SOLO) {
+            viewModelScope.launch { networkRepository.send(NetworkMessage(type = MessageType.REMATCH)) }
         }
         resetBoard()
     }
