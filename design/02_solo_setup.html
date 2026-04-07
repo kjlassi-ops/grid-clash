@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: {
+            "colors": {"on-primary": "#006165","primary-container": "#00f4fe","on-secondary": "#4f5066","surface-container-lowest": "#000000","surface-dim": "#0b0c1f","surface-container-highest": "#22233e","error-container": "#9f0519","on-primary-container": "#00575b","tertiary-fixed-dim": "#49a8fc","surface": "#0b0c1f","secondary-container": "#44455a","tertiary-dim": "#41a3f7","outline": "#73738b","primary-dim": "#00e5ee","surface-container": "#16172e","surface-bright": "#282947","error": "#ff716c","on-surface-variant": "#a9a9c2","on-primary-fixed-variant": "#006266","tertiary": "#64b3ff","error-dim": "#d7383b","on-secondary-fixed": "#3d3e52","background": "#0b0c1f","primary": "#a1faff","on-tertiary-fixed-variant": "#003c65","on-background": "#e4e3fe","tertiary-container": "#45a6fa","surface-variant": "#22233e","inverse-surface": "#fbf8ff","on-error": "#490006","inverse-primary": "#006a6e","on-tertiary": "#003053","on-tertiary-container": "#002440","secondary-fixed": "#e1e0fb","tertiary-fixed": "#6bb6ff","surface-container-high": "#1c1d36","on-error-container": "#ffa8a3","secondary-fixed-dim": "#d3d2ec","surface-tint": "#a1faff","on-surface": "#e4e3fe","on-primary-fixed": "#004346","primary-fixed": "#00f4fe","on-secondary-fixed-variant": "#595a70","primary-fixed-dim": "#00e5ee","on-tertiary-fixed": "#00192f","on-secondary-container": "#cfcee8","secondary-dim": "#d3d2ec","outline-variant": "#46465b","inverse-on-surface": "#535369","secondary": "#e1e0fb","surface-container-low": "#101126"},
+            "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+            "fontFamily": {"headline": ["Space Grotesk"],"body": ["Inter"],"label": ["Inter"]}
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-glow { box-shadow: 0 0 40px rgba(0, 245, 255, 0.08); }
+        body { min-height: max(884px, 100dvh); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex flex-col">
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#0b0c1f]">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#1c1d36] transition-colors active:scale-95 duration-150"><span class="material-symbols-outlined text-[#00F5FF]">arrow_back</span></button>
+<h1 class="font-['Space_Grotesk'] font-bold tracking-tight text-xl text-[#e4e3fe]">Solo Setup</h1>
+</div>
+<div class="text-xl font-black tracking-tighter text-[#00F5FF] font-['Space_Grotesk']">GRID CLASH</div>
+</header>
+<main class="flex-grow pt-24 pb-32 px-6 max-w-2xl mx-auto w-full">
+<section class="mb-12">
+<p class="text-on-surface-variant font-label text-sm tracking-widest mb-2">CHOOSE YOUR FATE</p>
+<h2 class="font-headline text-5xl font-black tracking-tighter text-on-surface leading-none">SELECT CHALLENGE</h2>
+</section>
+<div class="grid gap-4 md:grid-cols-1">
+<!-- Easy Card -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-lg p-6 transition-all hover:bg-surface-bright cursor-pointer active:scale-[0.98]">
+<div class="flex justify-between items-start mb-8">
+<div><span class="material-symbols-outlined text-primary-dim text-3xl mb-4">rocket_launch</span><h3 class="font-headline text-2xl font-bold text-on-surface">Easy</h3><p class="text-on-surface-variant text-sm mt-1">Perfect for warming up the reflexes.</p></div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+</div>
+<div class="flex gap-2"><span class="px-3 py-1 rounded-full bg-surface-container text-xs font-label text-primary">2x Points</span><span class="px-3 py-1 rounded-full bg-surface-container text-xs font-label text-on-surface-variant">Casual AI</span></div>
+</div>
+<!-- Medium Card (Selected) -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-lg p-6 border-2 border-primary-container/40 active-glow transition-all hover:bg-surface-bright cursor-pointer active:scale-[0.98]">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-container/10 to-transparent blur-2xl"></div>
+<div class="flex justify-between items-start mb-8">
+<div><span class="material-symbols-outlined text-primary text-3xl mb-4" style="font-variation-settings: 'FILL' 1;">bolt</span><h3 class="font-headline text-2xl font-bold text-on-surface">Medium</h3><p class="text-on-surface-variant text-sm mt-1">The standard Grid Clash experience.</p></div>
+<div class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary-container text-sm font-bold">check</span></div>
+</div>
+<div class="flex gap-2"><span class="px-3 py-1 rounded-full bg-primary-container/10 text-xs font-label text-primary">5x Points</span><span class="px-3 py-1 rounded-full bg-primary-container/10 text-xs font-label text-primary">Adaptive AI</span></div>
+</div>
+<!-- Hard Card -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-lg p-6 transition-all hover:bg-surface-bright cursor-pointer active:scale-[0.98]">
+<div class="flex justify-between items-start mb-8">
+<div><span class="material-symbols-outlined text-error text-3xl mb-4">skull</span><h3 class="font-headline text-2xl font-bold text-on-surface">Hard</h3><p class="text-on-surface-variant text-sm mt-1">Elite combatants only. No mercy.</p></div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+</div>
+<div class="flex gap-2"><span class="px-3 py-1 rounded-full bg-surface-container text-xs font-label text-error">10x Points</span><span class="px-3 py-1 rounded-full bg-surface-container text-xs font-label text-on-surface-variant">Alpha AI</span></div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 w-full z-50 px-6 pb-8 pt-4 bg-[#101126]/70 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-8px_40px_rgba(0,245,255,0.08)]">
+<div class="max-w-2xl mx-auto">
+<button class="w-full h-16 bg-gradient-to-br from-[#a1faff] to-[#00f4fe] rounded-full flex items-center justify-center gap-3 transition-all active:scale-90 duration-200 group">
+<span class="font-headline font-black text-[#0b0c1f] text-xl tracking-tighter">START GAME</span>
+<span class="material-symbols-outlined text-[#0b0c1f]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+</body></html>
