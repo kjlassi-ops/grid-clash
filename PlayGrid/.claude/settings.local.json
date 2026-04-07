@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where node:*)",
+      "Bash(where npx:*)",
+      "Bash(where pwsh:*)",
+      "Bash(where php:*)",
+      "Bash(where ruby:*)"
+    ]
+  }
+}

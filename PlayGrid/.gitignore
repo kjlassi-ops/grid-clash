@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+**/build/
+local.properties
+*.iws
+*.iml
+*.ipr
+.idea/
+out/
+
+# Android
+**/local.properties
+**/keystore.jks
+**/release-keystore.jks
+**/*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
+

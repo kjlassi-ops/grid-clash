@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: {
+                "colors": {"on-primary": "#006165","primary-container": "#00f4fe","on-secondary": "#4f5066","surface-container-lowest": "#000000","surface-dim": "#0b0c1f","surface-container-highest": "#22233e","error-container": "#9f0519","on-primary-container": "#00575b","surface": "#0b0c1f","tertiary-dim": "#41a3f7","outline": "#73738b","primary-dim": "#00e5ee","surface-container": "#16172e","surface-bright": "#282947","error": "#ff716c","on-surface-variant": "#a9a9c2","tertiary": "#64b3ff","background": "#0b0c1f","primary": "#a1faff","on-background": "#e4e3fe","tertiary-container": "#45a6fa","surface-variant": "#22233e","on-error": "#490006","inverse-primary": "#006a6e","on-tertiary": "#003053","on-tertiary-container": "#002440","secondary-fixed": "#e1e0fb","tertiary-fixed": "#6bb6ff","surface-container-high": "#1c1d36","on-error-container": "#ffa8a3","surface-tint": "#a1faff","on-surface": "#e4e3fe","on-primary-fixed": "#004346","primary-fixed": "#00f4fe","primary-fixed-dim": "#00e5ee","on-secondary-container": "#cfcee8","outline-variant": "#46465b","inverse-on-surface": "#535369","secondary": "#e1e0fb","surface-container-low": "#101126"},
+                "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+                "fontFamily": {"headline": ["Space Grotesk"],"body": ["Inter"],"label": ["Inter"]}
+              },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .neon-glow { box-shadow: 0 0 40px rgba(0, 245, 255, 0.08); }
+        .bg-grid { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(115, 115, 139, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(115, 115, 139, 0.05) 1px, transparent 1px); }
+        body { min-height: max(884px, 100dvh); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#0b0c1f]">
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#00F5FF] hover:bg-[#1c1d36] transition-colors rounded-full"><span class="material-symbols-outlined">arrow_back</span></button>
+<h1 class="text-xl font-black tracking-tighter text-[#00F5FF] font-['Space_Grotesk']">GRID CLASH</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/15">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-medium text-on-surface-variant uppercase tracking-widest">Wi-Fi Local</span>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-5xl mx-auto bg-grid min-h-screen">
+<section class="mb-12">
+<h2 class="text-5xl font-black font-headline text-on-surface tracking-tighter mb-2">MULTIPLAYER</h2>
+<p class="text-on-surface-variant text-lg max-w-md leading-relaxed">Establish a local neural link to battle opponents on the same network.</p>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+<!-- Host Card -->
+<div class="md:col-span-7 group">
+<div class="bg-surface-container-high rounded-lg p-8 h-full relative overflow-hidden transition-all duration-300 hover:bg-surface-bright neon-glow">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-12">
+<div><span class="text-primary font-black tracking-widest text-xs uppercase mb-2 block">Protocol 01</span><h3 class="text-3xl font-headline font-bold text-on-surface">Host a Game</h3></div>
+<div class="bg-primary/10 p-4 rounded-xl"><span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">router</span></div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 mb-8 border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-on-surface-variant text-sm font-medium uppercase tracking-tight">Room Identity</span>
+<span class="bg-primary-container/20 text-primary-container px-3 py-1 rounded text-xs font-bold tracking-widest">ID: 482-991</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-on-surface-variant text-xs">Local IP:</span>
+<code class="text-primary font-mono text-sm">192.168.1.104</code>
+<button class="ml-auto text-primary text-xs font-bold uppercase tracking-tighter hover:underline">Copy</button>
+</div>
+</div>
+<div class="space-y-3">
+<p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-4">Lobby (1/4)</p>
+<div class="flex items-center gap-4 bg-surface-container-highest p-4 rounded-lg border-l-4 border-primary">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person</span></div>
+<div><p class="text-on-surface font-bold text-sm">Cyber_Hunter (You)</p><p class="text-primary text-[10px] font-bold tracking-widest">HOST</p></div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest/50 p-4 rounded-lg border border-outline-variant/10">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center animate-pulse"><span class="material-symbols-outlined text-on-surface-variant text-xl">hourglass_empty</span></div>
+<p class="text-on-surface-variant italic text-sm">Searching for link...</p>
+</div>
+</div>
+<button class="mt-10 w-full py-4 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black text-sm tracking-widest uppercase active:scale-95 duration-200 shadow-[0_10px_25px_-5px_rgba(0,244,254,0.3)]">Broadcast Signal</button>
+</div>
+</div>
+</div>
+<!-- Join Card -->
+<div class="md:col-span-5 space-y-6">
+<div class="bg-surface-container-high rounded-lg p-8 relative overflow-hidden transition-all duration-300 hover:bg-surface-bright">
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<div><span class="text-on-surface-variant font-black tracking-widest text-xs uppercase mb-2 block">Protocol 02</span><h3 class="text-2xl font-headline font-bold text-on-surface">Join Session</h3></div>
+<div class="bg-surface-container-highest p-3 rounded-xl"><span class="material-symbols-outlined text-on-surface-variant text-2xl">sensors</span></div>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest px-1">Network Node IP</label>
+<input class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-4 text-primary font-mono placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" placeholder="e.g. 192.168.1.1" type="text"/>
+</div>
+<button class="w-full py-4 rounded-full bg-surface-container-highest text-on-surface font-black text-sm tracking-widest uppercase hover:bg-surface-bright transition-colors active:scale-95 duration-150">Connect to Link</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-lg p-6 flex items-center gap-5">
+<div class="relative"><div class="w-12 h-12 rounded-full border-2 border-outline-variant/20 flex items-center justify-center"><span class="material-symbols-outlined text-outline text-2xl">cloud_off</span></div></div>
+<div><p class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Status</p><p class="text-lg font-headline font-bold text-on-surface tracking-tight">Not Connected</p></div>
+</div>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-4 bg-[#101126]/70 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-8px_40px_rgba(0,245,255,0.08)]">
+<a class="flex items-center justify-center text-[#e4e3fe]/40 p-3" href="#"><span class="material-symbols-outlined">home</span></a>
+<a class="flex items-center justify-center bg-gradient-to-br from-[#a1faff] to-[#00f4fe] text-[#0b0c1f] rounded-full p-3" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videogame_asset</span></a>
+<a class="flex items-center justify-center text-[#e4e3fe]/40 p-3" href="#"><span class="material-symbols-outlined">group</span></a>
+<a class="flex items-center justify-center text-[#e4e3fe]/40 p-3" href="#"><span class="material-symbols-outlined">settings</span></a>
+</nav>
+</body></html>

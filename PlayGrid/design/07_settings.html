@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: {
+            "colors": {"on-primary": "#006165","primary-container": "#00f4fe","on-secondary": "#4f5066","surface-container-lowest": "#000000","surface-dim": "#0b0c1f","surface-container-highest": "#22233e","on-primary-container": "#00575b","surface": "#0b0c1f","outline": "#73738b","primary-dim": "#00e5ee","surface-container": "#16172e","surface-bright": "#282947","error": "#ff716c","on-surface-variant": "#a9a9c2","tertiary": "#64b3ff","background": "#0b0c1f","primary": "#a1faff","on-background": "#e4e3fe","tertiary-container": "#45a6fa","surface-container-high": "#1c1d36","surface-tint": "#a1faff","on-surface": "#e4e3fe","on-primary-fixed": "#004346","primary-fixed": "#00f4fe","outline-variant": "#46465b","secondary": "#e1e0fb","surface-container-low": "#101126"},
+            "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+            "fontFamily": {"headline": ["Space Grotesk"],"body": ["Inter"],"label": ["Inter"]}
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { min-height: max(884px, 100dvh); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex flex-col">
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#0b0c1f]">
+<div class="flex items-center gap-4">
+<button class="p-2 -ml-2 text-[#00F5FF] hover:bg-[#1c1d36] transition-colors rounded-full"><span class="material-symbols-outlined">arrow_back</span></button>
+<h1 class="text-xl font-headline font-bold tracking-tight text-[#00F5FF]">Settings</h1>
+</div>
+<div class="text-xl font-headline font-black tracking-tighter text-[#00F5FF]">GRID CLASH</div>
+</header>
+<main class="flex-1 mt-20 px-6 pb-32 max-w-2xl mx-auto w-full">
+<div class="mb-12">
+<h2 class="font-headline text-4xl font-bold tracking-tighter mb-2 opacity-90">Personalize</h2>
+<p class="text-on-surface-variant font-medium">Fine-tune your combat environment.</p>
+</div>
+<section class="space-y-4">
+<div class="bg-surface-container-low rounded-lg p-6 flex items-center justify-between transition-all hover:bg-surface-container-high group">
+<div class="flex flex-col"><span class="text-lg font-headline font-semibold text-on-surface group-hover:text-primary transition-colors">Sound</span><span class="text-sm text-on-surface-variant">In-game sound effects and UI feedback.</span></div>
+<button aria-checked="true" class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none bg-primary-container" role="switch"><span class="pointer-events-none inline-block h-6 w-6 translate-x-6 transform rounded-full bg-on-primary-container shadow ring-0 transition duration-200 ease-in-out"></span></button>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 flex items-center justify-between transition-all hover:bg-surface-container-high group">
+<div class="flex flex-col"><span class="text-lg font-headline font-semibold text-on-surface group-hover:text-primary transition-colors">Music</span><span class="text-sm text-on-surface-variant">Atmospheric synthwave background tracks.</span></div>
+<button aria-checked="true" class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none bg-primary-container" role="switch"><span class="pointer-events-none inline-block h-6 w-6 translate-x-6 transform rounded-full bg-on-primary-container shadow ring-0 transition duration-200 ease-in-out"></span></button>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 flex items-center justify-between transition-all hover:bg-surface-container-high group">
+<div class="flex flex-col"><span class="text-lg font-headline font-semibold text-on-surface group-hover:text-primary transition-colors">Theme</span><span class="text-sm text-on-surface-variant">Switch between Light and Dark interface.</span></div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">dark_mode</span>
+<button aria-checked="false" class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none bg-surface-container-highest" role="switch"><span class="pointer-events-none inline-block h-6 w-6 translate-x-0 transform rounded-full bg-on-surface-variant shadow ring-0 transition duration-200 ease-in-out"></span></button>
+<span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+</div>
+</div>
+<div class="pt-8 pb-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4 px-2">Account</h3>
+<div class="bg-surface-container-low rounded-lg p-6 flex items-center justify-between transition-all hover:bg-surface-container-high">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-surface-container-highest flex items-center justify-center"><span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">account_circle</span></div>
+<div class="flex flex-col"><span class="text-lg font-headline font-bold text-on-surface">Neon_Specter_7</span><span class="text-sm text-tertiary">Pro Tier Subscriber</span></div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</section>
+<footer class="mt-20 text-center">
+<div class="inline-block p-4 rounded-xl bg-surface-container-high/50 backdrop-blur-sm border border-outline-variant/10">
+<p class="text-xs font-bold tracking-widest text-on-surface-variant mb-1">GRID CLASH CORE</p>
+<p class="text-sm font-medium text-[#00F5FF]">Version 1.0.0-MVP</p>
+</div>
+</footer>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-4 bg-[#101126]/70 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,245,255,0.08)] rounded-t-[3rem]">
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">home</span></button>
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">videogame_asset</span></button>
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">group</span></button>
+<button class="flex items-center justify-center bg-gradient-to-br from-[#a1faff] to-[#00f4fe] text-[#0b0c1f] rounded-full p-3"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span></button>
+</nav>
+</body></html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grid Clash - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#006165","primary-container": "#00f4fe","on-secondary": "#4f5066","surface-container-lowest": "#000000","surface-dim": "#0b0c1f","surface-container-highest": "#22233e","error-container": "#9f0519","on-primary-container": "#00575b","tertiary-fixed-dim": "#49a8fc","surface": "#0b0c1f","secondary-container": "#44455a","tertiary-dim": "#41a3f7","outline": "#73738b","primary-dim": "#00e5ee","surface-container": "#16172e","surface-bright": "#282947","error": "#ff716c","on-surface-variant": "#a9a9c2","on-primary-fixed-variant": "#006266","tertiary": "#64b3ff","error-dim": "#d7383b","on-secondary-fixed": "#3d3e52","background": "#0b0c1f","primary": "#a1faff","on-tertiary-fixed-variant": "#003c65","on-background": "#e4e3fe","tertiary-container": "#45a6fa","surface-variant": "#22233e","inverse-surface": "#fbf8ff","on-error": "#490006","inverse-primary": "#006a6e","on-tertiary": "#003053","on-tertiary-container": "#002440","secondary-fixed": "#e1e0fb","tertiary-fixed": "#6bb6ff","surface-container-high": "#1c1d36","on-error-container": "#ffa8a3","secondary-fixed-dim": "#d3d2ec","surface-tint": "#a1faff","on-surface": "#e4e3fe","on-primary-fixed": "#004346","primary-fixed": "#00f4fe","on-secondary-fixed-variant": "#595a70","primary-fixed-dim": "#00e5ee","on-tertiary-fixed": "#00192f","on-secondary-container": "#cfcee8","secondary-dim": "#d3d2ec","outline-variant": "#46465b","inverse-on-surface": "#535369","secondary": "#e1e0fb","surface-container-low": "#101126"
+            },
+            "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+            "fontFamily": {"headline": ["Space Grotesk"],"body": ["Inter"],"label": ["Inter"]}
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .grid-background { background-image: linear-gradient(to right, rgba(0, 245, 255, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 245, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px; }
+        .radial-glow { background: radial-gradient(circle at center, rgba(161, 250, 255, 0.1) 0%, transparent 70%); }
+        body { min-height: max(884px, 100dvh); }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface overflow-hidden">
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#0b0c1f]">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#00F5FF]">arrow_back</span>
+<h1 class="font-['Space_Grotesk'] font-bold tracking-tight text-xl font-black tracking-tighter text-[#00F5FF]">GRID CLASH</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high"><span class="material-symbols-outlined text-[#e4e3fe]/60">notifications</span></div>
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high"><span class="material-symbols-outlined text-[#e4e3fe]/60">account_circle</span></div>
+</div>
+</header>
+<main class="relative h-screen w-full flex flex-col items-center justify-center grid-background overflow-hidden px-6">
+<div class="absolute inset-0 radial-glow pointer-events-none"></div>
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tertiary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="relative z-10 text-center mb-16 space-y-4">
+<div class="inline-block px-4 py-1.5 bg-surface-container-high rounded-full border border-outline-variant/15 mb-4">
+<span class="font-label text-xs tracking-widest text-primary uppercase font-semibold">Season 04 Active</span>
+</div>
+<h2 class="font-headline text-7xl md:text-9xl font-black tracking-tighter text-on-surface drop-shadow-[0_0_30px_rgba(161,250,255,0.2)]">GRID<br/><span class="text-primary">CLASH</span></h2>
+<p class="font-body text-on-surface-variant max-w-md mx-auto text-lg leading-relaxed px-4">Dominate the neon field. Outsmart your opponents in the ultimate tactical geometry battle.</p>
+</div>
+<div class="relative z-10 w-full max-w-md flex flex-col gap-4">
+<button class="group relative w-full h-16 flex items-center justify-between px-8 bg-gradient-to-br from-[#a1faff] to-[#00f4fe] rounded-xl shadow-[0_0_40px_rgba(0,244,254,0.15)] active:scale-95 transition-all duration-200">
+<div class="flex items-center gap-4"><span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">play_arrow</span><span class="font-headline font-bold text-xl text-on-primary-container">Play Solo</span></div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-on-primary-container">trending_flat</span></div>
+</button>
+<button class="w-full h-16 flex items-center justify-between px-8 bg-surface-container-highest rounded-xl border border-outline-variant/10 active:scale-95 transition-all duration-200">
+<div class="flex items-center gap-4"><span class="material-symbols-outlined text-primary">groups</span><span class="font-headline font-bold text-xl text-on-surface">Local Multiplayer</span></div>
+<span class="font-label text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded">2-4P</span>
+</button>
+<div class="grid grid-cols-2 gap-4 mt-2">
+<button class="h-14 flex items-center justify-center gap-3 bg-surface-container-low/50 backdrop-blur-md rounded-xl border border-outline-variant/5 hover:bg-surface-container-high transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined text-on-surface-variant text-xl">menu_book</span><span class="font-label font-medium text-on-surface-variant">Rules</span></button>
+<button class="h-14 flex items-center justify-center gap-3 bg-surface-container-low/50 backdrop-blur-md rounded-xl border border-outline-variant/5 hover:bg-surface-container-high transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined text-on-surface-variant text-xl">settings</span><span class="font-label font-medium text-on-surface-variant">Settings</span></button>
+</div>
+</div>
+<div class="absolute bottom-24 opacity-20 pointer-events-none"><div class="w-[120vw] h-64 bg-primary rotate-12 blur-[140px]"></div></div>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-4 bg-[#101126]/70 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-8px_40px_rgba(0,245,255,0.08)]">
+<div class="flex items-center justify-center bg-gradient-to-br from-[#a1faff] to-[#00f4fe] text-[#0b0c1f] rounded-full p-3"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span></div>
+<div class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">videogame_asset</span></div>
+<div class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">group</span></div>
+<div class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">settings</span></div>
+</nav>
+</body></html>

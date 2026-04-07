@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: {
+            "colors": {"on-primary": "#006165","primary-container": "#00f4fe","surface-container-lowest": "#000000","surface": "#0b0c1f","outline": "#73738b","primary-dim": "#00e5ee","surface-container": "#16172e","surface-bright": "#282947","on-surface-variant": "#a9a9c2","tertiary": "#64b3ff","background": "#0b0c1f","primary": "#a1faff","on-background": "#e4e3fe","tertiary-container": "#45a6fa","surface-container-high": "#1c1d36","surface-tint": "#a1faff","on-surface": "#e4e3fe","primary-fixed": "#00f4fe","outline-variant": "#46465b","secondary": "#e1e0fb","surface-container-low": "#101126"},
+            "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+            "fontFamily": {"headline": ["Space Grotesk"],"body": ["Inter"],"label": ["Inter"]}
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; min-height: max(884px, 100dvh); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#0b0c1f]">
+<div class="flex items-center gap-4">
+<button class="text-[#00F5FF] hover:bg-[#1c1d36] transition-colors p-2 rounded-full"><span class="material-symbols-outlined">arrow_back</span></button>
+<h1 class="text-xl font-black tracking-tighter text-[#00F5FF] font-['Space_Grotesk']">Rules</h1>
+</div>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 mt-16 mb-24 px-6 py-8 max-w-2xl mx-auto w-full overflow-y-auto">
+<div class="mb-12 pt-4">
+<span class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-2 block">Instructional Guide</span>
+<h2 class="text-4xl font-headline font-black tracking-tighter text-on-surface leading-none">Mastering the <br/><span class="text-primary-container">Neon Arena</span></h2>
+</div>
+<div class="space-y-6">
+<section class="bg-surface-container-low rounded-lg p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10"><span class="material-symbols-outlined text-8xl">target</span></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container/10 p-2 rounded-md"><span class="material-symbols-outlined text-primary">adjust</span></div>
+<h3 class="text-xl font-headline font-bold text-on-surface">Objective</h3>
+</div>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed">The core mission of <span class="text-on-surface font-semibold">GRID CLASH</span> is tactical alignment. Navigate the digital matrix to <span class="text-primary">connect your pieces</span> in a continuous line—vertically, horizontally, or diagonally—to secure a win.</p>
+</div>
+</section>
+<section class="bg-surface-container-high rounded-lg p-8 relative overflow-hidden border-l-4 border-primary/20">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-primary-container/10 p-2 rounded-md"><span class="material-symbols-outlined text-primary">grid_view</span></div>
+<h3 class="text-xl font-headline font-bold text-on-surface">Gameplay</h3>
+</div>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed mb-6">Each player takes turns deploying energy pulses onto the grid cells. Strategic placement is key; every move must balance offensive progress with defensive awareness.</p>
+<div class="grid grid-cols-4 gap-2 opacity-30">
+<div class="h-12 bg-surface-container rounded-md"></div>
+<div class="h-12 bg-primary/20 rounded-md ring-1 ring-primary/50"></div>
+<div class="h-12 bg-surface-container rounded-md"></div>
+<div class="h-12 bg-surface-container rounded-md"></div>
+</div>
+</section>
+<section class="bg-surface-bright rounded-lg p-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-tertiary-container/10 p-2 rounded-md"><span class="material-symbols-outlined text-tertiary">lightbulb</span></div>
+<h3 class="text-xl font-headline font-bold text-on-surface">Pro Tips</h3>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 items-start"><span class="text-primary font-black text-xl font-headline mt-1">01</span><p class="text-lg text-on-surface-variant">Outsmart the adaptive AI to earn <span class="text-tertiary">bonus multipliers</span> for every chain reaction.</p></div>
+<div class="flex gap-4 items-start"><span class="text-primary font-black text-xl font-headline mt-1">02</span><p class="text-lg text-on-surface-variant">Control the center of the grid early to maximize your connection possibilities and limit your opponent's reach.</p></div>
+</div>
+</section>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-4 bg-[#101126]/70 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-8px_40px_rgba(0,245,255,0.08)]">
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">home</span></button>
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">videogame_asset</span></button>
+<button class="flex items-center justify-center text-[#e4e3fe]/40 p-3"><span class="material-symbols-outlined">group</span></button>
+<button class="flex items-center justify-center bg-gradient-to-br from-[#a1faff] to-[#00f4fe] text-[#0b0c1f] rounded-full p-3"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span></button>
+</nav>
+</body></html>
