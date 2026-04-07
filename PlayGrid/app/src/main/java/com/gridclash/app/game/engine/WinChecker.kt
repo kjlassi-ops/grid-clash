@@ -6,35 +6,45 @@ import com.gridclash.app.core.model.PlayerSymbol
 
 object WinChecker {
 
-    // Toutes les combinaisons gagnantes (indices du plateau 0..8)
-    private val WIN_LINES = listOf(
-        listOf(0, 1, 2), // ligne 1
-        listOf(3, 4, 5), // ligne 2
-        listOf(6, 7, 8), // ligne 3
-        listOf(0, 3, 6), // colonne 1
-        listOf(1, 4, 7), // colonne 2
-        listOf(2, 5, 8), // colonne 3
-        listOf(0, 4, 8), // diagonale \
-        listOf(2, 4, 6)  // diagonale /
-    )
-
-    /**
-     * Analyse le plateau et retourne le résultat actuel.
-     */
-    fun check(board: List<CellState>): GameResult {
-        for (line in WIN_LINES) {
-            val (a, b, c) = line
-            val cell = board[a]
-            if (cell != CellState.EMPTY && cell == board[b] && cell == board[c]) {
-                val winner = if (cell == CellState.X) PlayerSymbol.X else PlayerSymbol.O
-                return GameResult.Winner(winner, line)
+    fun check(board: List<CellState>, gridSize: Int, winLength: Int): GameResult {
+        val lines = buildLines(gridSize, winLength)
+        for (line in lines) {
+            val first = board[line.first()]
+            if (first == CellState.EMPTY) continue
+            if (line.all { board[it] == first }) {
+                return GameResult.Winner(
+                    symbol = if (first == CellState.X) PlayerSymbol.X else PlayerSymbol.O,
+                    cells = line
+                )
             }
         }
-        return if (board.none { it == CellState.EMPTY }) GameResult.Draw
-        else GameResult.Ongoing
+        return if (board.none { it == CellState.EMPTY }) GameResult.Draw else GameResult.Ongoing
     }
 
-    /** Retourne les cases vides. */
-    fun emptyCells(board: List<CellState>): List<Int> =
-        board.indices.filter { board[it] == CellState.EMPTY }
+    fun emptyCells(board: List<CellState>): List<Int> = board.indices.filter { board[it] == CellState.EMPTY }
+
+    fun buildLines(gridSize: Int, winLength: Int): List<List<Int>> {
+        val lines = mutableListOf<List<Int>>()
+        for (row in 0 until gridSize) {
+            for (col in 0..(gridSize - winLength)) {
+                lines += (0 until winLength).map { row * gridSize + col + it }
+            }
+        }
+        for (col in 0 until gridSize) {
+            for (row in 0..(gridSize - winLength)) {
+                lines += (0 until winLength).map { (row + it) * gridSize + col }
+            }
+        }
+        for (row in 0..(gridSize - winLength)) {
+            for (col in 0..(gridSize - winLength)) {
+                lines += (0 until winLength).map { (row + it) * gridSize + (col + it) }
+            }
+        }
+        for (row in 0..(gridSize - winLength)) {
+            for (col in (winLength - 1) until gridSize) {
+                lines += (0 until winLength).map { (row + it) * gridSize + (col - it) }
+            }
+        }
+        return lines
+    }
 }

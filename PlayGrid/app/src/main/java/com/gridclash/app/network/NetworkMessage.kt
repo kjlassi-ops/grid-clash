@@ -2,35 +2,29 @@ package com.gridclash.app.network
 
 import kotlinx.serialization.Serializable
 
-// ─── Types de messages ────────────────────────────────────────────────────────
-
 enum class MessageType {
-    PLAYER_JOIN,    // client → host : annonce sa présence
-    GAME_START,     // host → client : démarre la partie avec les symboles
-    PLAY_MOVE,      // bidirectionnel : indique un coup joué
-    GAME_OVER,      // bidirectionnel : fin de partie
-    REMATCH,        // bidirectionnel : demande / accepte une revanche
-    DISCONNECT,     // bidirectionnel : déconnexion propre
-    PING            // keepalive
+    PLAYER_JOIN,
+    GAME_START,
+    PLAY_MOVE,
+    GAME_OVER,
+    REMATCH,
+    DISCONNECT,
+    PING
 }
-
-// ─── Structure du message (JSON flat) ────────────────────────────────────────
 
 @Serializable
 data class NetworkMessage(
     val type: MessageType,
-
-    // PLAYER_JOIN
     val playerName: String? = null,
-
-    // GAME_START
-    val hostSymbol: String? = null,     // "X" ou "O"
+    val hostName: String? = null,
+    val clientName: String? = null,
+    val hostSymbol: String? = null,
     val clientSymbol: String? = null,
-
-    // PLAY_MOVE
+    val gridSize: Int? = null,
+    val winLength: Int? = null,
+    val difficulty: String? = null,
     val cellIndex: Int? = null,
-
-    // GAME_OVER
-    val result: String? = null,         // "X_WINS", "O_WINS", "DRAW"
-    val winner: String? = null          // "X" ou "O" ou null
+    val result: String? = null,
+    val winner: String? = null,
+    val error: String? = null
 )

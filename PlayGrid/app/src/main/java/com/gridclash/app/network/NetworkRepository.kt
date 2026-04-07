@@ -3,33 +3,33 @@ package com.gridclash.app.network
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.util.Log
-import kotlinx.coroutines.flow.SharedFlow
+import com.gridclash.app.core.model.Difficulty
+import com.gridclash.app.core.model.GridSize
 import java.net.Inet4Address
 import java.net.NetworkInterface
 
 private const val TAG = "NetworkRepository"
 
-/**
- * Singleton qui encapsule GameServer et GameClient.
- * Partagé entre MultiplayerViewModel et GameViewModel.
- */
 class NetworkRepository {
+
+    data class LobbyConfig(
+        val hostName: String = "Hôte",
+        val clientName: String = "Client",
+        val gridSize: GridSize = GridSize.THREE,
+        val winLength: Int = 3,
+        val difficulty: Difficulty = Difficulty.MEDIUM
+    )
+
+    var lobbyConfig: LobbyConfig = LobbyConfig()
 
     private var server: GameServer? = null
     private var client: GameClient? = null
 
-    // ─── Accès aux flux de messages ──────────────────────────────────────────
-
-    val serverIncoming: SharedFlow<NetworkMessage>?
-        get() = server?.incoming
-
-    val clientIncoming: SharedFlow<NetworkMessage>?
-        get() = client?.incoming
+    val serverIncoming get() = server?.incoming
+    val clientIncoming get() = client?.incoming
 
     val isHosting: Boolean get() = server != null
-    val isClient: Boolean  get() = client != null
-
-    // ─── Hôte ─────────────────────────────────────────────────────────────────
+    val isClient: Boolean get() = client != null
 
     fun createServer(): GameServer {
         server?.stop()
@@ -45,8 +45,6 @@ class NetworkRepository {
         server = null
     }
 
-    // ─── Client ───────────────────────────────────────────────────────────────
-
     fun createClient(): GameClient {
         client?.disconnect()
         return GameClient().also { client = it }
@@ -61,30 +59,23 @@ class NetworkRepository {
         client = null
     }
 
-    // ─── Envoi générique (selon le rôle) ─────────────────────────────────────
-
     suspend fun send(message: NetworkMessage) {
         when {
             isHosting -> sendAsHost(message)
-            isClient  -> sendAsClient(message)
+            isClient -> sendAsClient(message)
         }
     }
-
-    // ─── Nettoyage ────────────────────────────────────────────────────────────
 
     fun clear() {
         stopServer()
         disconnectClient()
+        lobbyConfig = LobbyConfig()
     }
-
-    // ─── Utilitaire IP locale ─────────────────────────────────────────────────
 
     companion object {
         fun getLocalIp(context: Context): String {
-            // Méthode 1 : WifiManager (rapide)
             runCatching {
-                val wm = context.applicationContext
-                    .getSystemService(Context.WIFI_SERVICE) as WifiManager
+                val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
                 val ip = wm.connectionInfo.ipAddress
                 if (ip != 0) {
                     return String.format(
@@ -94,7 +85,6 @@ class NetworkRepository {
                     )
                 }
             }
-            // Méthode 2 : NetworkInterface (fonctionne aussi en hotspot)
             runCatching {
                 NetworkInterface.getNetworkInterfaces()?.toList()
                     ?.flatMap { it.inetAddresses.toList() }
